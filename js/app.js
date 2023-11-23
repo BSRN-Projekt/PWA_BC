@@ -402,3 +402,41 @@ function closeNav() {
   document.getElementById("main").style.marginLeft = "0";
   document.body.style.backgroundColor = "white";
 }
+/* Open the sidenav */
+function openNav() {
+  document.getElementById("mySidenav").style.width = "100%";
+}
+
+/* Close/hide the sidenav */
+function closeNav() {
+  document.getElementById("mySidenav").style.width = "0";
+}
+/* Open the sidenav */
+function openNav() {
+  document.getElementById("mySidenav").style.display = "block";
+}
+
+/* Close/hide the sidenav */
+function closeNav() {
+  document.getElementById("mySidenav").style.display = "none";
+}
+.sidenav {
+  right: 0;
+}
+/* The sidenav */
+.sidenav {
+  height: 100%;
+  width: 200px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+/* Page content */
+.main {
+  margin-left: 200px; /* Same as the width of the sidenav */
+}
