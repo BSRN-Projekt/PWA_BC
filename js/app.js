@@ -150,7 +150,7 @@ async function downloadFromCache() {
     document.body.removeChild(a);
   } catch (err) {
     console.error('Failed to download video from cache:', err);
-    alert(`Error: ${err.message}`);
+    alert(Error: ${err.message});
   }
 }
 
