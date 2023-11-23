@@ -1,67 +1,19 @@
-/*const container = document.querySelector(".container");
-const coffees = [
-  {
-    name: "Perspiciatis",
-    image: "images/coffee1.jpg"
-  },
-  {
-    name: "Voluptatem",
-    image: "images/coffee2.jpg"
-  },
-  {
-    name: "Explicabo",
-    image: "images/coffee3.jpg"
-  },
-  {
-    name: "Rchitecto",
-    image: "images/coffee4.jpg"
-  },
-  {
-    name: " Beatae",
-    image: "images/coffee5.jpg"
-  },
-  {
-    name: " Vitae",
-    image: "images/coffee6.jpg"
-  },
-  {
-    name: "Inventore",
-    image: "images/coffee7.jpg"
-  },
-  {
-    name: "Veritatis",
-    image: "images/coffee8.jpg"
-  },
-  {
-    name: "Accusantium",
-    image: "images/coffee9.jpg"
-  }
-];
-const showCoffees = () => {
-  let output = "";
-  coffees.forEach(
-    ({ name, image }) =>
-      (output += `
-              <div class="card">
-                <img class="card--avatar" src=${image} />
-                <h1 class="card--title">${name}</h1>
-                <a class="card--link" href="#">Taste</a>
-              </div>
-              `)
-  );
-  container.innerHTML = output;
-};
 
-document.addEventListener("DOMContentLoaded", showCoffees);
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function() {
+if (navigator.serviceWorker) {
+  window.addEventListener("load", () => {
     navigator.serviceWorker
-      .register("/serviceWorker.js")
-      .then(res => console.log("service worker registered"))
-      .catch(err => console.log("service worker not registered", err));
+      .register("/sw.js")
+      .then(regEvent => console.log("Service worker registered!"))
+      .catch(err => console.log("Service worker not registered"));
   });
-} */
+}
+function getUserMedia(options, successCallback, failureCallback) {
+  var api = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia || navigator.msGetUserMedia;
+  if (api) {
+    return api.bind(navigator)(options, successCallback, failureCallback);
+  }
+}
 
 var theStream;
 var theRecorder;
@@ -150,7 +102,7 @@ async function downloadFromCache() {
     document.body.removeChild(a);
   } catch (err) {
     console.error('Failed to download video from cache:', err);
-    alert(Error: ${err.message});
+    alert(`Error: ${err.message}`);
   }
 }
 
@@ -188,26 +140,50 @@ function saveToCache(blob) {
   }
 }
 
-var target = document.getElementById('target');
-var watchId;
+//playback the video from the cache
+async function playbackFromCache() {
+  const videoKey = 'my_recorded_video.webm';
 
-function appendLocation(location, verb) {
-  verb = verb || 'updated';
-  var newLocation = document.createElement('p');
-  newLocation.innerHTML = 'Location ' + verb + ': ' + location.coords.latitude + ', ' + location.coords.longitude + '';
-  target.appendChild(newLocation);
+  if (!('caches' in window)) {
+    alert('Cache-API wird nicht unterstützt!');
+    return;
+  }
+
+  try {
+    const cache = await caches.open('video-cache');
+    const cachedResponse = await cache.match(videoKey);
+
+    if (!cachedResponse || !cachedResponse.ok) {
+      throw new Error('Kein zwischengespeichertes Video gefunden!');
+    }
+
+    const blob = await cachedResponse.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const video = document.getElementById('playbackVideo'); // Änderung: Verwenden Sie das playbackVideo-Element
+    video.src = url;
+    video.play();
+  } catch (err) {
+    console.error('Fehler beim Abspielen des Videos aus dem Cache:', err);
+    alert(`Fehler: ${err.message}`);
+  }
 }
 
-if ('geolocation' in navigator) {
-  document.getElementById('askButton').addEventListener('click', function () {
-    navigator.geolocation.getCurrentPosition(function (location) {
-      appendLocation(location, 'fetched');
+document.getElementById('playButton').addEventListener('click', playbackFromCache);
+
+// Funktion, um den Cache zu leeren
+function clearCache() {
+  if ('caches' in window) {
+    caches.delete('video-cache').then(() => {
+      console.log('Cache geleert!');
+    }).catch(error => {
+      console.error('Fehler beim Leeren des Caches:', error);
     });
-    watchId = navigator.geolocation.watchPosition(appendLocation);
-  });
-} else {
-  target.innerText = 'Geolocation API not supported.';
+  } else {
+    console.error('Cache-API wird nicht unterstützt');
+  }
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 if ('LinearAccelerationSensor' in window && 'Gyroscope' in window) {
   document.getElementById('moApi').innerHTML = 'Generic Sensor API';
   
@@ -268,40 +244,33 @@ function rotationHandler(rotation) {
   info = info.replace("Z", rotation.gamma && rotation.gamma.toFixed(3));
   document.getElementById("moRotation").innerHTML = info;
 }
-if ('storage' in navigator && 'estimate' in navigator.storage) {
-  navigator.storage.estimate()
-    .then(estimate => {
-      document.getElementById('usage').innerHTML = estimate.usage;
-      document.getElementById('quota').innerHTML = estimate.quota;
-      document.getElementById('percent').innerHTML = (estimate.usage * 100 / estimate.quota).toFixed(0);
-    });
+
+function intervalHandler(interval) {
+  document.getElementById("moInterval").innerHTML = interval;
 }
 
-if ('storage' in navigator && 'estimate' in navigator.storage) {
-  navigator.storage.estimate()
-    .then(estimate => {
-      document.getElementById('usage').innerHTML = estimate.usage;
-      document.getElementById('quota').innerHTML = estimate.quota;
-      document.getElementById('percent').innerHTML = (estimate.usage * 100 / estimate.quota).toFixed(0);
-    });
+var target = document.getElementById('target');
+var watchId;
+
+function appendLocation(location, verb) {
+  verb = verb || 'updated';
+  var newLocation = document.createElement('p');
+  newLocation.innerHTML = 'Location ' + verb + ': ' + location.coords.latitude + ', ' + location.coords.longitude + '';
+  target.appendChild(newLocation);
 }
 
-if ('storage' in navigator && 'persisted' in navigator.storage) {
-  navigator.storage.persisted()
-    .then(persisted => {
-      document.getElementById('persisted').innerHTML = persisted ? 'persisted' : 'not persisted';
+if ('geolocation' in navigator) {
+  document.getElementById('askButton').addEventListener('click', function () {
+    navigator.geolocation.getCurrentPosition(function (location) {
+      appendLocation(location, 'fetched');
     });
+    watchId = navigator.geolocation.watchPosition(appendLocation);
+  });
+} else {
+  target.innerText = 'Geolocation API not supported.';
 }
-
-function requestPersistence() {
-  if ('storage' in navigator && 'persist' in navigator.storage) {
-    navigator.storage.persist()
-      .then(persisted => {
-        document.getElementById('persisted').innerHTML = persisted ? 'persisted' : 'not persisted';
-      });
-  }
-}
-if ('localStorage' in window || 'sessionStorage' in window) {
+ //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ if ('localStorage' in window || 'sessionStorage' in window) {
   var selectedEngine;
 
   var logTarget = document.getElementById('target');
@@ -347,9 +316,59 @@ if ('localStorage' in window || 'sessionStorage' in window) {
 
   window.addEventListener('storage', onStorageChanged);
 }
-function intervalHandler(interval) {
-  document.getElementById("moInterval").innerHTML = interval;
+
+if ('storage' in navigator && 'estimate' in navigator.storage) {
+  navigator.storage.estimate()
+    .then(estimate => {
+      document.getElementById('usage').innerHTML = estimate.usage;
+      document.getElementById('quota').innerHTML = estimate.quota;
+      document.getElementById('percent').innerHTML = (estimate.usage * 100 / estimate.quota).toFixed(0);
+    });
 }
+
+if ('storage' in navigator && 'persisted' in navigator.storage) {
+  navigator.storage.persisted()
+    .then(persisted => {
+      document.getElementById('persisted').innerHTML = persisted ? 'persisted' : 'not persisted';
+    });
+}
+
+function requestPersistence() {
+  if ('storage' in navigator && 'persist' in navigator.storage) {
+    navigator.storage.persist()
+      .then(persisted => {
+        document.getElementById('persisted').innerHTML = persisted ? 'persisted' : 'not persisted';
+      });
+  }
+}
+function getReadFile(reader, i) {
+  return function () {
+    var li = document.querySelector('[data-idx="' + i + '"]');
+
+    li.innerHTML += 'File starts with "' + reader.result.substr(0, 25) + '"';
+  }
+}
+
+function readFiles(files) {
+  document.getElementById('count').innerHTML = files.length;
+
+  var target = document.getElementById('target');
+  target.innerHTML = '';
+
+  for (var i = 0; i < files.length; ++i) {
+    var item = document.createElement('li');
+    item.setAttribute('data-idx', i);
+    var file = files[i];
+
+    var reader = new FileReader();
+    reader.addEventListener('load', getReadFile(reader, i));
+    reader.readAsText(file);
+
+    item.innerHTML = '' + file.name + ', ' + file.type + ', ' + file.size + ' bytes, last modified ' + file.lastModifiedDate + '';
+    target.appendChild(item);
+  };
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 function getReadFile(reader, i) {
   return function () {
     var li = document.querySelector('[data-idx="' + i + '"]');
