@@ -417,3 +417,28 @@ async function writeFile() {
   
   target.innerHTML = 'Test content written to ' + file.name + '.';
 }
+document.addEventListener('DOMContentLoaded', function () {
+    // Sample data (replace this with your actual data)
+    const data = [
+        { description: 'Expense 1', date: '2023-11-30', category: 'Food', amount: 50, balance: 950 },
+        { description: 'Income 1', date: '2023-11-29', category: 'Salary', amount: 1000, balance: 1950 },
+        // Add more data as needed
+    ];
+
+    // Get the table body element
+    const tableBody = document.getElementById('sign-body');
+
+    // Populate the table with data
+    data.forEach(entry => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${entry.description}</td>
+            <td>${entry.date}</td>
+            <td>${entry.category}</td>
+            <td>${entry.amount}</td>
+            <td>${entry.balance}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+});
+
