@@ -414,87 +414,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kanban Board</title>
-  <style>
-    .test-element {
-  height: 100px;
-  background-color: black;
-  width: 100px;
-  z-index: 5;
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  color: white;
-  text-align: center;
-  -ms-touch-action: none;
-}
-
-.test-element:nth-child(2) {
-  top: 150px;
-  left: 150px;
-}
-
-.test-element:nth-child(3) {
-  top: 50px;
-  left: 100px;
-}
-    .column {
-      width: 30%;
-      float: left;
-      margin: 10px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background-color: #f9f9f9;
-    }
-
-    .test-element {
-      margin: 5px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      background-color: #fff;
-      cursor: move;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
+  <title>Drag and Drop</title>
 </head>
 <body>
+  <div class="column" id="aufgabe">
+    <h2>Aufgabe</h2>
+    <div class="test-element" draggable="true">Kanban ausprobieren</div>
+    <div class="test-element" draggable="true">Bunte post-its kaufen</div>
+  </div>
 
-<div id="aufgabe" class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
-  <div class="test-element" draggable="true" ondragstart="drag(event)">Kanban ausprobieren</div>
-  <div class="test-element" draggable="true" ondragstart="drag(event)">Bunte post-its kaufen</div>
-  <div class="test-element" draggable="true" ondragstart="drag(event)">Mehr über Kanban lernen</div>
-  <div class="test-element" draggable="true" ondragstart="drag(event)">Kanban-Tafel einweihen</div>
-</div>
+  <div class="column" id="bearbeitung">
+    <h2>Bearbeitung</h2>
+    <div class="test-element" draggable="true">Mehr über Kanban lernen</div>
+  </div>
 
-<div id="bearbeitung" class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
-  <!-- Repeat the same structure for the "Bearbeitung" column -->
-</div>
+  <div class="column" id="erledigt">
+    <h2>Erledigt</h2>
+    <div class="test-element" draggable="true">Kanban-Tafel einweihen</div>
+  </div>
 
-<div id="erledigt" class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
-  <!-- Repeat the same structure for the "Erledigt" column -->
-</div>
-
-<script>
-  function allowDrop(ev) {
-    ev.preventDefault();
-  }
-
-  function drag(ev) {
-    ev.dataTransfer.setData("text", ev.target.textContent);
-  }
-
-  function drop(ev) {
-    ev.preventDefault();
-    var data = ev.dataTransfer.getData("text");
-    var element = document.createElement("div");
-    element.className = "test-element";
-    element.textContent = data;
-    element.draggable = true;
-    element.ondragstart = function (e) { drag(e); };
-    ev.target.appendChild(element);
-  }
-</script>
-
+  <script src="app.js"></script>
 </body>
 </html>
