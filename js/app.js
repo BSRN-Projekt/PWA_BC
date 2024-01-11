@@ -460,4 +460,25 @@ var elements = document.querySelectorAll('.test-element');
 document.ongesturechange = function () {
   return false;
 }
+var dragged;
+
+document.addEventListener('drag', function (event) {
+  // store a reference to the dragged element
+  dragged = event.target;
+}, false);
+
+document.addEventListener('dragover', function (event) {
+  // prevent default to allow drop
+  event.preventDefault();
+}, false);
+
+document.addEventListener('drop', function (event) {
+  // prevent default action (open as link for some elements)
+  event.preventDefault();
+
+  // move dragged element to the new container
+  if (event.target.classList.contains('column')) {
+    event.target.appendChild(dragged);
+  }
+}, false);
 
