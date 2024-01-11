@@ -417,68 +417,23 @@ async function writeFile() {
   
   target.innerHTML = 'Test content written to ' + file.name + '.';
 }
-function startDrag(e) {
-  this.ontouchmove = this.onmspointermove = moveDrag;
-
-  this.ontouchend = this.onmspointerup = function () {
-    this.ontouchmove = this.onmspointermove = null;
-    this.ontouchend = this.onmspointerup = null;
-  }
-
-  var pos = [this.offsetLeft, this.offsetTop];
-  var that = this;
-  var origin = getCoors(e);
-
-  function moveDrag(e) {
-    var currentPos = getCoors(e);
-    var deltaX = currentPos[0] - origin[0];
-    var deltaY = currentPos[1] - origin[1];
-    this.style.left = (pos[0] + deltaX) + 'px';
-    this.style.top = (pos[1] + deltaY) + 'px';
-    return false; // cancels scrolling
-  }
-
-  function getCoors(e) {
-    var coors = [];
-    if (e.targetTouches && e.targetTouches.length) {
-      var thisTouch = e.targetTouches[0];
-      coors[0] = thisTouch.clientX;
-      coors[1] = thisTouch.clientY;
-    } else {
-      coors[0] = e.clientX;
-      coors[1] = e.clientY;
-    }
-    return coors;
-  }
+function allowDrop(event) {
+  event.preventDefault();
 }
 
-var elements = document.querySelectorAll('.test-element');
-[].forEach.call(elements, function (element) {
-  element.ontouchstart = element.onmspointerdown = startDrag;
-});
-
-document.ongesturechange = function () {
-  return false;
+function drag(event) {
+  event.dataTransfer.setData("text", event.target.innerText);
 }
-var dragged;
 
-document.addEventListener('drag', function (event) {
-  // store a reference to the dragged element
-  dragged = event.target;
-}, false);
-
-document.addEventListener('dragover', function (event) {
-  // prevent default to allow drop
+function drop(event) {
   event.preventDefault();
-}, false);
-
-document.addEventListener('drop', function (event) {
-  // prevent default action (open as link for some elements)
-  event.preventDefault();
-
-  // move dragged element to the new container
-  if (event.target.classList.contains('column')) {
-    event.target.appendChild(dragged);
-  }
-}, false);
-
+  var data = event.dataTransfer.getData("text");
+  var draggedElement = document.createElement("div");
+  draggedElement.className = "test-element";
+  draggedElement.innerText = data;
+  draggedElement.draggable = true;
+  draggedElement.ondragstart = function (e) {
+    drag(e);
+  };
+  event.target.appendChild(draggedElement);
+}
