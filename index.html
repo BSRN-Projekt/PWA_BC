@@ -418,22 +418,24 @@
   <title>Drag and Drop</title>
 </head>
 <body>
-  <div class="column" id="aufgabe">
+  <div class="column" id="aufgabe" ondrop="drop(event)" ondragover="allowDrop(event)">
     <h2>Aufgabe</h2>
-    <div class="test-element" draggable="true">Kanban ausprobieren</div>
-    <div class="test-element" draggable="true">Bunte post-its kaufen</div>
   </div>
 
-  <div class="column" id="bearbeitung">
+  <div class="column" id="bearbeitung" ondrop="drop(event)" ondragover="allowDrop(event)">
     <h2>Bearbeitung</h2>
-    <div class="test-element" draggable="true">Mehr über Kanban lernen</div>
   </div>
 
-  <div class="column" id="erledigt">
+  <div class="column" id="erledigt" ondrop="drop(event)" ondragover="allowDrop(event)">
     <h2>Erledigt</h2>
-    <div class="test-element" draggable="true">Kanban-Tafel einweihen</div>
   </div>
+
+  <div class="test-element" draggable="true" ondragstart="drag(event)">Kanban ausprobieren</div>
+  <div class="test-element" draggable="true" ondragstart="drag(event)">Bunte post-its kaufen</div>
+  <div class="test-element" draggable="true" ondragstart="drag(event)">Mehr über Kanban lernen</div>
+  <div class="test-element" draggable="true" ondragstart="drag(event)">Kanban-Tafel einweihen</div>
 
   <script src="app.js"></script>
 </body>
 </html>
+
