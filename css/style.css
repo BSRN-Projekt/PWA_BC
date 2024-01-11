@@ -108,4 +108,20 @@ h1 {
   text-align: center;
   -ms-touch-action: none;
 }
+.column {
+  float: left;
+  width: 30%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  margin: 5px;
+}
+
+.test-element {
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin: 5px 0;
+  background-color: #fff;
+  cursor: grab;
+}
 
