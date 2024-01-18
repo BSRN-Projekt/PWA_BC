@@ -272,6 +272,7 @@ function addStreamToVideoTag(stream, tag) {
     e.waitUntil(
       caches.open(cacheName).then(function(cache) {
         console.log('[ServiceWorker] Caching app shell');
+         console.log('[ServiceWorker] Installed');
         return cache.addAll (filesToCache);
       })
       );
@@ -280,17 +281,4 @@ self. addEventListener ('activate'. function(e) {
 console.log('[ServiceWorker] Activate');
 });
 
-self.addEventListener ('activate, function(e) {
-console. log(' [Servicelorker] Activate');
-e. waitUntil(
-caches. keys(). then(function(keyList) {
-return Promise.all(keyList.map(function(key) {
-if (key !== cacheName) {
-console. log ('[ServiceWorker] Removing old cache' , key);
-return caches.delete(key);
-}
-}));
-})
-  );
-  return self.clients.claim();
-});
+
