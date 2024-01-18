@@ -259,24 +259,21 @@ function addStreamToVideoTag(stream, tag) {
     mediaControl.src = (window.URL || window.webkitURL).createObjectURL(stream);
   }
 
-  self.addEventListener("install", installEvent => {
-  console.log('Service Worker installed');
-  installEvent.waitUntil(
-    caches.open(staticDevCoffee).then(cache => {
-      cache.addAll(assets);
-    })
-  );
+self. addEventListener ('activate'. function(e) {
+console.log('[ServiceWorker] Activate');
 });
 
-self.addEventListener("activate", activateEvent => {
-  console.log('Service Worker activated');
-});
-
-self.addEventListener("fetch", fetchEvent => {
-  console.log('Service Worker fetch event');
-  fetchEvent.respondWith(
-    caches.match(fetchEvent.request).then(res => {
-      return res || fetch(fetchEvent.request);
-    })
+self.addEventListener ('activate, function(e) {
+console. log(' [Servicelorker] Activate');
+e. waitUntil(
+caches. keys(). then(function(keyList) {
+return Promise.all(keyList.map(function(key) {
+if (key !== cacheName) {
+console. log ('[ServiceWorker] Removing old cache' , key);
+return caches.delete(key);
+}
+}));
+})
   );
+  return self.clients.claim();
 });
